@@ -1,18 +1,23 @@
 import { Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
+import { Tables } from "@/constants/supabase";
 
-type CategoryProps = { title: string };
+type CategoryProps = {
+  category: Tables<"category">;
+};
 
-const CategoryList = ({ title }: CategoryProps) => {
+const CategoryList = ({ category }: CategoryProps) => {
   let color;
-  switch (title) {
-    case "Niño":
-    case "Bebe niño":
+  switch (category.title) {
+    case "Baby Boy":
+    case "Toddler Boy":
+    case "Big Boy":
       color = "#8ddaf0";
       break;
-    case "Niña":
-    case "Bebe niña":
+    case "Baby Girl":
+    case "Toddler Girl":
+    case "Big Girl":
       color = "#f3c7de";
       break;
     default:
@@ -21,9 +26,13 @@ const CategoryList = ({ title }: CategoryProps) => {
   }
 
   return (
-    <Link href="/(tabs)/inventory/sizes/" asChild style={styles.container}>
+    <Link
+      href={`/(tabs)/inventory/${category.title}`}
+      asChild
+      style={styles.container}
+    >
       <Pressable style={{ backgroundColor: color }}>
-        <Text style={styles.category}>{title}</Text>
+        <Text style={styles.categoryCard}>{category.title}</Text>
       </Pressable>
     </Link>
   );
@@ -39,7 +48,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  category: {
+  categoryCard: {
     fontSize: 40,
     padding: 10,
     marginVertical: 20,
