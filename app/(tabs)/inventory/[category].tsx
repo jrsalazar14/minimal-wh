@@ -5,7 +5,7 @@ import { useCategoryList } from "@/api/category";
 import { useInventoryList } from "@/api/inventory";
 import { useSizeList } from "@/api/size";
 
-const CategoryScreen = () => {
+const CategorySizesScreen = () => {
   const { category } = useLocalSearchParams();
   const { data: categories } = useCategoryList();
   const cat = categories?.find((c) => c.title.toString() === category);
@@ -30,7 +30,7 @@ const CategoryScreen = () => {
   }, [cat, inventory, sizes]);
 
   if (!cat) {
-    return <Text>Category not found</Text>;
+    return <Text>Failed to fetch inventory</Text>;
   }
 
   return (
@@ -39,7 +39,7 @@ const CategoryScreen = () => {
       <Text style={styles.sizes}>Tallas disponibles:</Text>
       <View>
         {availableSizes.map((size, index) => (
-          <Link href={"/(tabs)/inventory/categories/"} asChild>
+          <Link href={`/(tabs)/inventory/categories/${size}`} asChild>
             <Pressable>
               <Text key={index} style={styles.textButton}>
                 {size}
@@ -52,7 +52,7 @@ const CategoryScreen = () => {
   );
 };
 
-export default CategoryScreen;
+export default CategorySizesScreen;
 
 const styles = StyleSheet.create({
   sizes: {

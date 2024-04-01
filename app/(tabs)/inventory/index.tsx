@@ -4,7 +4,7 @@ import { View, Text } from "@/components/Themed";
 import CategoryList from "@/components/CategoryList";
 import { useCategoryList } from "@/api/category";
 
-export default function CategoryScreen() {
+export default function MenuScreen() {
   const { data: categories, isLoading, error } = useCategoryList();
 
   if (isLoading) {

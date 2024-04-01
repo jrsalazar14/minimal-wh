@@ -19,6 +19,10 @@ import {
 } from "@/api/inventory";
 import { useCategoryList } from "@/api/category";
 import { useSizeList } from "@/api/size";
+import { randomUUID } from "expo-crypto";
+import * as FileSystem from "expo-file-system";
+import { supabase } from "@/lib/supabase";
+import { decode } from "base64-arraybuffer";
 
 const CreateScreen = () => {
   const [price, setPrice] = useState("");
@@ -83,14 +87,14 @@ const CreateScreen = () => {
     }
   };
 
-  const onUpdate = () => {
+  const onUpdate = async () => {
     if (!validateInput()) {
       return;
     }
-    console.warn("Actualizando producto");
+    const imagePath = await uploadImage();
 
     updateItem(
-      { id, size, price: parseFloat(price), image },
+      { id, size, price: parseFloat(price), image: imagePath },
       {
         onSuccess: () => {
           resetField();
@@ -100,21 +104,20 @@ const CreateScreen = () => {
     );
   };
 
-  const onCreate = () => {
+  const onCreate = async () => {
     if (!validateInput()) {
       return;
     }
-    console.warn("Creando producto");
-
     const selectedSizeId = parseInt(size);
     const selectedCategoryId = parseInt(category);
+    const imagePath = await uploadImage();
 
     inserItem(
       {
         size_id: selectedSizeId,
         category_id: selectedCategoryId,
         price: parseFloat(price),
-        image,
+        image: imagePath ?? "",
       },
       {
         onSuccess: () => {
@@ -144,6 +147,28 @@ const CreateScreen = () => {
         style: "destructive",
       },
     ]);
+  };
+
+  const uploadImage = async () => {
+    if (!image?.startsWith("file://")) {
+      return;
+    }
+
+    const base64 = await FileSystem.readAsStringAsync(image, {
+      encoding: "base64",
+    });
+    const filePath = `${randomUUID()}.png`;
+    const contentType = "image/png";
+
+    const { data, error } = await supabase.storage
+      .from("items-images")
+      .upload(filePath, decode(base64), { contentType });
+
+    console.log(error);
+
+    if (data) {
+      return data.path;
+    }
   };
 
   const pickImage = async () => {
